@@ -6,7 +6,7 @@
  */
 
 
-#include <include/memory_local.h>
+#include "memory_local.h"
 #include "bch_31_16_3.h"
 #include <math.h>
 
@@ -107,17 +107,17 @@ static char reverseLookup[] = {
 static unsigned int RegLFSR=0;
 
 
-void bch_buffer_encoder() {
+void bch_31163_buffer_encoder(unsigned char *buffer_in,unsigned char *buffer_out) {
     unsigned char  a, b;
     unsigned int   i;
     unsigned long  codeword;
     unsigned long  *ptr_buff;
     unsigned int   *ptr_tmp;
 
-    ptr_buff = (unsigned long *)buffer;
-    ptr_tmp  = (unsigned int  *)buffer_tmp;
+    ptr_buff = (unsigned long *)buffer_in;
+    ptr_tmp  = (unsigned int  *)buffer_out;
 
-    for (i = 0; i < BUFFER_TMP_SIZE/sizeof(unsigned int); i++) {
+    for (i = 0; i < BCH31163_BUFFER_TMP_SIZE/sizeof(unsigned int); i++) {
         a = 0xff & ptr_tmp[i];
         b = 0xff & (ptr_tmp[i] >> 8);
         encoder_bch(a,b);
@@ -127,7 +127,7 @@ void bch_buffer_encoder() {
     }
 }
 
-void bch_buffer_decoder() {
+void bch_31163_buffer_decoder(unsigned char *buffer_in, unsigned char *buffer_out) {
     unsigned char a,b;
     unsigned int i;
     unsigned long  *ptr_buff;
@@ -135,10 +135,10 @@ void bch_buffer_decoder() {
     unsigned long  word;
     unsigned char out[2];
 
-    ptr_buff = (unsigned long *)buffer;
-    ptr_tmp  = (unsigned int  *)buffer_tmp;
+    ptr_buff = (unsigned long *)buffer_in;
+    ptr_tmp  = (unsigned int  *)buffer_out;
 
-    for (i = 0; i < BUFFER_TMP_SIZE/sizeof(unsigned int); i++) {
+    for (i = 0; i < BCH31163_BUFFER_TMP_SIZE/sizeof(unsigned int); i++) {
         bits_2_bytes(ptr_buff[i], EncBuffer);    // Convert to a GF32 polynomial
         decoder_bch();
         word = bytes_2_bits(EncBuffer);

@@ -9,19 +9,38 @@
 #include "TI_aes_128.h"
 #include "aes_256.h"
 
-void aes_128_enc_dec_buffer(unsigned char dir) {
+static unsigned char tmp_key[AES256_KEY_SIZE];
+
+void aes_128_enc_dec_buffer(unsigned char *buffer_128, unsigned char dir) {
     unsigned int i,k;
     char *Flash_ptrA;
     unsigned char *state;
 
     Flash_ptrA = (char *) INFO_A;
-    state = buffer_tmp;
+    state = buffer_128;
 
-    for (i = 0; i < BUFFER_TMP_SIZE/AES_128_SIZE; i++) {
-        for (k = 0; k < KEY_BUFFER_SIZE; k++) {
-            key_1[k] = Flash_ptrA[k];
+    for (i = 0; i < BCH31163_BUFFER_TMP_SIZE/AES_128_SIZE; i++) {
+        for (k = 0; k < AES128_KEY_SIZE; k++) {
+            tmp_key[k] = Flash_ptrA[k];
         }
-        aes_enc_dec(state,key_1, dir);
+        aes_enc_dec(state,tmp_key, dir);
         state += AES_128_SIZE;
+    }
+}
+
+void aes_256_enc_dec_buffer(unsigned char *buffer_256, unsigned char dir) {
+    unsigned int i,k;
+    char *Flash_ptrA;
+    unsigned char *state;
+
+    Flash_ptrA = (char *) INFO_A;
+    state = buffer_256;
+
+    for (i = 0; i < BCH31212_BUFFER_TMP_SIZE/AES_256_SIZE; i++) {
+        for (k = 0; k < AES256_KEY_SIZE; k++) {
+            tmp_key[k] = Flash_ptrA[k];
+        }
+        aes_enc_dec(state,tmp_key, dir);
+        state += AES_256_SIZE;
     }
 }

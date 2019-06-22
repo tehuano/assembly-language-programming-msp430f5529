@@ -5,22 +5,18 @@
  *      Author: Rommel
  */
 
-#include <include/memory_local.h>
+#include "memory_local.h"
 #include <msp430.h>
-
-unsigned char buffer_tmp[BUFFER_TMP_SIZE];
-unsigned char buffer[PAGE_SIZE];
-unsigned char key_1[KEY_BUFFER_SIZE];
 
 /* Performs read operation to the flash
  */
-void read_from_flash() {
+void read_from_flash(unsigned char *buffer_out) {
     unsigned int i;
     unsigned char *RAM_ptr;
     unsigned char *Flash_ptrD;
 
     Flash_ptrD = (unsigned char *) INFO_D;             // Initialize Flash segment D ptr
-    RAM_ptr = (unsigned char *) buffer;
+    RAM_ptr = (unsigned char *) buffer_out;
     for (i = 0; i < PAGE_SIZE; i++) {
         *RAM_ptr++ = *Flash_ptrD++;          // copy value segment C to seg D
     }
@@ -28,12 +24,12 @@ void read_from_flash() {
 
 /* Performs write operation to the flash
  */
-void write_to_flash() {
+void write_to_flash(unsigned char *buffer_in) {
       unsigned int i;
       char *RAM_ptr;
       char *Flash_ptrD;
 
-      RAM_ptr = (char *) buffer;
+      RAM_ptr = (char *) buffer_in;
       Flash_ptrD = (char *) INFO_D;             // Initialize Flash segment D ptr
 
       __disable_interrupt();                    // 5xx Workaround: Disable global
@@ -56,12 +52,12 @@ void write_to_flash() {
 
 /* Performs write key operation to the flash
  */
-void write_key_to_flash() {
+void write_key_to_flash(unsigned char *pkey_1, unsigned int size) {
       unsigned int i;
       char *RAM_ptr;
       char *Flash_ptrA;
 
-      RAM_ptr = (unsigned char *) &key_1;
+      RAM_ptr = (unsigned char *) pkey_1;
       Flash_ptrA = (unsigned char *) INFO_A;             // Initialize Flash segment A ptr
 
       __disable_interrupt();                    // 5xx Workaround: Disable global
@@ -73,7 +69,7 @@ void write_key_to_flash() {
       *Flash_ptrA = 0;                          // Dummy write to erase Flash seg A
       FCTL1 = FWKEY+WRT;                        // Set WRT bit for write operation
 
-      for (i = 0; i < KEY_BUFFER_SIZE; i++) {
+      for (i = 0; i < size; i++) {
           *Flash_ptrA++ = *RAM_ptr++;           // copy value to seg D
       }
 

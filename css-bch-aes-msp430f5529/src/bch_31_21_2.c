@@ -55,6 +55,9 @@
  *
  */
 
+#include "memory_local.h"
+#include "bch_31_21_2.h"
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,8 +66,79 @@ static int m = 5, n = 31, k = 21, t = 2, d = 5;
 static int length = 31;
 static int p[6];       /* irreducible polynomial */
 static int alpha_to[32], index_of[32], g[11];
-static int recd[31], data[21], bb[11];
+static int recd[31], data[31], bb[11];
 static int numerr, errpos[32], decerror = 0;
+
+
+void bch_31212_buffer_encoder(unsigned char *buffer_in,unsigned char *buffer_out) {
+    unsigned char  a, b;
+    unsigned int   i,ii;
+    unsigned long  codeword;
+    unsigned long  *ptr_buff;
+    unsigned int   *ptr_tmp;
+
+    ptr_buff = (unsigned long *)buffer_in;
+    ptr_tmp  = (unsigned int  *)buffer_out;
+
+    for (i = 0; i < BCH31212_BUFFER_TMP_SIZE/sizeof(unsigned int); i++) {
+        bch31212_bits_2_bytes(ptr_tmp[i] & 0xffff, data);
+        encode_bch();
+        for (ii = 0; ii < length - k; ii++)
+            recd[i] = bb[i];    /* first (length-k) bits are redundancy */
+        for (ii = 0; ii < k; ii++)
+            recd[ii + length - k] = data[ii]; /* last k bits are data */
+        codeword = bch31212_bytes_2_bits(recd);
+        ptr_buff[i] = codeword;
+    }
+}
+
+void bch_31212_buffer_decoder(unsigned char *buffer_in, unsigned char *buffer_out) {
+    unsigned char a,b;
+    unsigned int i;
+    unsigned long  *ptr_buff;
+    unsigned int   *ptr_tmp;
+    unsigned long  word;
+    unsigned char out[2];
+
+    ptr_buff = (unsigned long *)buffer_in;
+    ptr_tmp  = (unsigned int  *)buffer_out;
+
+    for (i = 0; i < BCH31212_BUFFER_TMP_SIZE/sizeof(unsigned int); i++) {
+        bch31212_bits_2_bytes(ptr_buff[i], recd);    // Convert to a GF32 polynomial
+        decode_bch();
+        word = bch31212_bytes_2_bits(recd);
+        ptr_tmp[i] = word;
+    }
+}
+
+/* Long to Array convertor */
+void bch31212_bits_2_bytes(unsigned long num, char *p) {
+    unsigned int i = 0;
+    char temp = 0;
+    for(i = 0; i < 31; i++) {
+        temp = num % 2;
+        if (temp == 0) {
+            p[i] = BCH_31212_ZERO;    // -1 is ZERO, i.e. coeff = 0
+        } else {
+            p[i] = 0;       // alpha**0, i.e. coeff = 1
+        }
+        num = num >> 1;     // shift for next iteration
+    }
+}
+
+/* Convert GF32 polynomial (array) to a GF2 polynomial (long) */
+unsigned long bch31212_bytes_2_bits(char *p) {
+    char i;
+    unsigned long ret=0;
+
+    for(i = 0; i < 31; i++) {
+        ret = ret | (p[31-i] == 0); /* if 0, or in a 1, if ZERO, or in a 0 */
+        ret = ret << 1; /* and then shift it up */
+    }
+    ret |= (p[0] == 0); /* shift up the last one - since only 31 elements */
+
+    return ret;
+}
 
 /* Primitive polynomial of degree 5 */
 void read_p() {

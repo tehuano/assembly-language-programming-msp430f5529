@@ -16,6 +16,7 @@ ORDERED_OBJS += \
 "./src/bch_31_16_3.obj" \
 "./src/bch_31_21_2.obj" \
 "./src/cipher.obj" \
+"./src/helper.obj" \
 "./src/memory_local.obj" \
 "./src/uart_msp430f5529.obj" \
 "../lnk_msp430f5529.cmd" \
@@ -164,8 +165,8 @@ bch-aes-msp430f5529.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "main.obj" "src\TI_aes_128.obj" "src\aes_256.obj" "src\bch_31_16_3.obj" "src\bch_31_21_2.obj" "src\cipher.obj" "src\memory_local.obj" "src\uart_msp430f5529.obj" 
-	-$(RM) "main.d" "src\TI_aes_128.d" "src\aes_256.d" "src\bch_31_16_3.d" "src\bch_31_21_2.d" "src\cipher.d" "src\memory_local.d" "src\uart_msp430f5529.d" 
+	-$(RM) "main.obj" "src\TI_aes_128.obj" "src\aes_256.obj" "src\bch_31_16_3.obj" "src\bch_31_21_2.obj" "src\cipher.obj" "src\helper.obj" "src\memory_local.obj" "src\uart_msp430f5529.obj" 
+	-$(RM) "main.d" "src\TI_aes_128.d" "src\aes_256.d" "src\bch_31_16_3.d" "src\bch_31_21_2.d" "src\cipher.d" "src\helper.d" "src\memory_local.d" "src\uart_msp430f5529.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

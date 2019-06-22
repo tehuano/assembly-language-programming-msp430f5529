@@ -8,24 +8,17 @@
 #ifndef MEMORY_LOCAL_H_
 #define MEMORY_LOCAL_H_
 
-    #define PAGE_SIZE       128
-    #define CODEWORD        31
-    #define DATA_SIZE       16
-    #define BUFFER_TMP_SIZE (((PAGE_SIZE*8)/(CODEWORD+1))*(DATA_SIZE/8))
+    #define PAGE_SIZE         128
+    #define BCH31163_CODEWORD 31
+    #define BCH31163_DATA     16
+    #define BCH31212_CODEWORD 31
+    #define BCH31212_DATA     21
 
-    #define KEY_BUFFER_SIZE 16
-    #define NO_OPERATION    0x00
-    #define OPERATION       0x01
+    #define BCH31163_BUFFER_TMP_SIZE (((PAGE_SIZE*8)/(BCH31163_CODEWORD+1))*(BCH31163_DATA/8))
+    #define BCH31212_BUFFER_TMP_SIZE (((PAGE_SIZE*8)/(BCH31212_CODEWORD+1))*(BCH31212_DATA/8))
 
-    #define INFO_D          0x1800
-    #define INFO_A          0x1900
-
-    extern unsigned char index_dmabuff;
-    extern unsigned char index_keybuff;
-
-    extern unsigned char buffer_tmp[BUFFER_TMP_SIZE];
-    extern unsigned char buffer[PAGE_SIZE];
-    extern unsigned char key_1[KEY_BUFFER_SIZE];
+    #define INFO_D 0x1800
+    #define INFO_A 0x1900
 
     void read_from_flash();
     void write_key_to_flash();

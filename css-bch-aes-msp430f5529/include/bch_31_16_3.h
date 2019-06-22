@@ -42,8 +42,10 @@
     /* random number */
     // extern unsigned int RegLFSR;
 
-    void bch_buffer_encoder();
-    void bch_buffer_decoder();
+
+
+    void bch_31163_buffer_encoder(unsigned char *buffer_in,unsigned char *buffer_out);
+    void bch_31163_buffer_decoder(unsigned char *buffer_in,unsigned char *buffer_out);
     void bch_encoder(unsigned char a, unsigned char b, unsigned long *w);
     void bch_decoder(unsigned long w, unsigned char *a, unsigned char *b);
     void multiply_constant(char c, char *p, Poly32 *ret);
